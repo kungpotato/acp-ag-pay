@@ -26,13 +26,16 @@ func main() {
 	sessions := acp.NewSessionStore(store)
 	acp.NewSessionHandler(sessions).Register(mux)
 
+	orders := acp.NewOrderStore()
+	acp.NewOrderHandler(orders).Register(mux)
+
 	settler := payment.NewStripeSettler(os.Getenv("STRIPE_SECRET_KEY"))
 	if settler.Configured() {
 		log.Print("payment: Stripe settlement enabled")
 	} else {
 		log.Print("payment: STRIPE_SECRET_KEY not set, /api/agent/pay will return 503")
 	}
-	acp.NewPayHandler(sessions, settler).Register(mux)
+	acp.NewPayHandler(sessions, orders, settler).Register(mux)
 
 	var llmParser *agent.LLMParser
 	if key := os.Getenv("OPENROUTER_API_KEY"); key != "" {

@@ -14,11 +14,17 @@ import (
 // only after the shopper confirms the cart.
 type PayHandler struct {
 	sessions *SessionStore
+	orders   *OrderStore
 	settler  *payment.StripeSettler
 }
 
-func NewPayHandler(sessions *SessionStore, settler *payment.StripeSettler) *PayHandler {
-	return &PayHandler{sessions: sessions, settler: settler}
+func NewPayHandler(sessions *SessionStore, orders *OrderStore, settler *payment.StripeSettler) *PayHandler {
+	return &PayHandler{sessions: sessions, orders: orders, settler: settler}
+}
+
+type payResponse struct {
+	Session CheckoutSession `json:"session"`
+	Order   Order           `json:"order"`
 }
 
 func (h *PayHandler) Register(mux *http.ServeMux) {
@@ -70,5 +76,6 @@ func (h *PayHandler) pay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, updated)
+	order := h.orders.CreateFromSession(updated)
+	writeJSON(w, http.StatusOK, payResponse{Session: updated, Order: order})
 }

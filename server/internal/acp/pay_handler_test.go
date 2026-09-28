@@ -21,7 +21,7 @@ func TestPayHandlerReturns503WhenStripeNotConfigured(t *testing.T) {
 
 	settler := payment.NewStripeSettler("") // unconfigured, matches .env.example default
 	mux := http.NewServeMux()
-	NewPayHandler(sessions, settler).Register(mux)
+	NewPayHandler(sessions, NewOrderStore(), settler).Register(mux)
 
 	body, _ := json.Marshal(payRequest{SessionID: session.ID})
 	req := httptest.NewRequest(http.MethodPost, "/api/agent/pay", bytes.NewReader(body))
@@ -37,7 +37,7 @@ func TestPayHandlerRejectsUnknownSession(t *testing.T) {
 	sessions := NewSessionStore(catalog.NewStore())
 	settler := payment.NewStripeSettler("")
 	mux := http.NewServeMux()
-	NewPayHandler(sessions, settler).Register(mux)
+	NewPayHandler(sessions, NewOrderStore(), settler).Register(mux)
 
 	body, _ := json.Marshal(payRequest{SessionID: "cs_does_not_exist"})
 	req := httptest.NewRequest(http.MethodPost, "/api/agent/pay", bytes.NewReader(body))
