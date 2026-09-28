@@ -18,7 +18,7 @@ session ไม่ใช่ตอนจ่ายเงินสำเร็จ �
 
 ## ลำดับการทำงาน
 
-![checkout session sequence](diagrams/04-checkout-session-sequence.svg)
+![checkout session sequence](diagrams/04-checkout-session-sequence.png)
 
 ## ทำไมต้อง rollback ทั้งตะกร้าถ้ารายการเดียวจองไม่สำเร็จ
 

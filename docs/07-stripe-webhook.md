@@ -19,7 +19,7 @@
 
 ## ลำดับการทำงาน
 
-![webhook sequence](diagrams/07-webhook-sequence.svg)
+![webhook sequence](diagrams/07-webhook-sequence.png)
 
 ## ทำไมต้องตรวจลายเซ็น ไม่ใช่แค่เชื่อ JSON body
 

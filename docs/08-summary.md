@@ -9,7 +9,7 @@ order เปลี่ยนสถานะแบบ real-time เมื่อ wo
 
 ## สถาปัตยกรรมสรุปรวม
 
-![full architecture](diagrams/08-full-architecture.svg)
+![full architecture](diagrams/08-full-architecture.png)
 
 ## เส้นทางข้อมูลแบบเต็ม (recap)
 

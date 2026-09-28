@@ -14,7 +14,7 @@
 - **Payment settlement**: Stripe (test mode) ผ่านขั้นตอน ACP checkout → settle
 - **เอกสารประกอบ**: ภาษาไทยทั้งหมด อยู่ใน `docs/`
 
-ดูภาพสถาปัตยกรรมระดับสูง: [00-architecture.svg](diagrams/00-architecture.svg)
+ดูภาพสถาปัตยกรรมระดับสูง: [00-architecture.png](diagrams/00-architecture.png)
 
 ## โครงสร้างบทเรียน
 
@@ -33,7 +33,7 @@
 
 - **Commit เล็กและถี่** ตามแนวทางหนังสือ *Accelerate*: เปลี่ยนแปลงทีละก้อนเล็ก ๆ ที่ build ผ่านและทดสอบได้
   แทนที่จะรวมงานทั้งบทไว้ commit เดียว เพื่อให้ trunk พร้อม deploy ได้ตลอดเวลา
-- **แต่ละบท** จะมีโฟลเดอร์เอกสารของตัวเองใน `docs/` พร้อม diagram (svg) และ GIF สาธิตการใช้งาน
+- **แต่ละบท** จะมีโฟลเดอร์เอกสารของตัวเองใน `docs/` พร้อม diagram (png) และ GIF สาธิตการใช้งาน
 - **ทดสอบด้วย Stripe test mode เท่านั้น** ห้ามใช้ live key ใน workshop นี้
 
 ## สิ่งที่ต้องเตรียมก่อนเริ่ม
@@ -47,5 +47,5 @@
 
 - `docs/00-overview.md` (ไฟล์นี้)
 - `docs/01-catalog.md` ถึง `docs/08-summary.md` — เอกสารแต่ละบท
-- `docs/diagrams/` — ไฟล์ svg ของทุก diagram
+- `docs/diagrams/` — ไฟล์ png ของทุก diagram
 - `docs/demos/` — GIF สาธิตการทำงานของแต่ละบท

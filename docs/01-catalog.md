@@ -16,7 +16,7 @@
 
 ## สถาปัตยกรรมของบทนี้
 
-![catalog flow](diagrams/01-catalog-flow.svg)
+![catalog flow](diagrams/01-catalog-flow.png)
 
 ## โครงสร้างโค้ด
 

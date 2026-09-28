@@ -19,7 +19,7 @@ agent ที่เราเขียนเอง แต่ **หัวใจข�
 
 ## สถาปัตยกรรมของบทนี้
 
-![product feed](diagrams/03-product-feed.svg)
+![product feed](diagrams/03-product-feed.png)
 
 ## ทำไมต้องแปลง `Book` เป็น `Product` แยกกัน
 

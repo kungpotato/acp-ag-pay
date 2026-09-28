@@ -20,7 +20,7 @@
 
 ## ลำดับสถานะ
 
-![order status flow](diagrams/06-order-status-flow.svg)
+![order status flow](diagrams/06-order-status-flow.png)
 
 ## เครื่องมือช่วยสอน: `/api/dev/seed_order`
 

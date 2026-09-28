@@ -21,7 +21,7 @@
 
 ## ลำดับการทำงาน
 
-![stripe settle sequence](diagrams/05-stripe-settle-sequence.svg)
+![stripe settle sequence](diagrams/05-stripe-settle-sequence.png)
 
 ## ทำไม `/api/agent/pay` ต้องตอบ 503 ไม่ใช่ 500
 

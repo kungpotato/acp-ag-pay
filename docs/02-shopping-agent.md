@@ -19,7 +19,7 @@
 
 ## ลำดับการทำงาน
 
-![agent sequence](diagrams/02-agent-sequence.svg)
+![agent sequence](diagrams/02-agent-sequence.png)
 
 ## โครงสร้างโค้ดที่เพิ่มเข้ามา
 
