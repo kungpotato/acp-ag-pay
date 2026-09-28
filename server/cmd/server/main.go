@@ -28,6 +28,7 @@ func main() {
 
 	orders := acp.NewOrderStore()
 	acp.NewOrderHandler(orders).Register(mux)
+	acp.NewDevHandler(orders).Register(mux) // workshop-only, see dev_handler.go
 
 	settler := payment.NewStripeSettler(os.Getenv("STRIPE_SECRET_KEY"))
 	if settler.Configured() {
