@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { createCheckoutSession, type CheckoutSession } from "@/lib/checkout";
 import { settlePayment } from "@/lib/pay";
+import OrderStatus from "./OrderStatus";
 
 export default function CartPanel() {
   const { items, removeItem, totalCents } = useCart();
   const [session, setSession] = useState<CheckoutSession | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [payMessage, setPayMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,7 @@ export default function CartPanel() {
       const result = await settlePayment(session.id);
       if (result.ok) {
         setSession(result.session);
+        setOrderId(result.order.id);
         setPayMessage("สร้าง Stripe PaymentIntent สำเร็จ พร้อมชำระเงินจริง");
       } else if (result.status === 503) {
         setPayMessage(
@@ -125,6 +128,18 @@ export default function CartPanel() {
 
       {payMessage && (
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{payMessage}</p>
+      )}
+
+      {orderId && (
+        <>
+          <OrderStatus orderId={orderId} />
+          <a
+            href={`/orders/${orderId}`}
+            className="mt-2 inline-block text-xs text-zinc-500 underline"
+          >
+            เปิดหน้ายืนยันคำสั่งซื้อ
+          </a>
+        </>
       )}
     </section>
   );
