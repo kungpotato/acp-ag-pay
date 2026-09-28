@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { sendChatMessage, type ChatReply } from "@/lib/agent";
 import { formatPrice } from "@/lib/api";
+import { useCart } from "@/lib/cart-context";
 
 type ChatEntry = { role: "user" | "agent"; reply?: ChatReply; text?: string };
 
 export default function ChatPanel() {
+  const { addBook } = useCart();
   const [input, setInput] = useState("");
   const [entries, setEntries] = useState<ChatEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -72,6 +74,13 @@ export default function ChatPanel() {
                       <p className="mt-1 text-zinc-700 dark:text-zinc-300">
                         {formatPrice(book)}
                       </p>
+                      <button
+                        onClick={() => addBook(book)}
+                        disabled={book.stock <= 0}
+                        className="mt-2 w-full rounded border border-zinc-300 px-2 py-1 text-xs disabled:opacity-40 dark:border-zinc-700"
+                      >
+                        เพิ่มลงตะกร้า
+                      </button>
                     </li>
                   ))}
                 </ul>
