@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"acp-ag-pay/server/internal/acp"
 	"acp-ag-pay/server/internal/agent"
 	"acp-ag-pay/server/internal/catalog"
 	"acp-ag-pay/server/internal/httpx"
@@ -19,6 +20,7 @@ func main() {
 	store := catalog.NewStore()
 	mux := http.NewServeMux()
 	catalog.NewHandler(store).Register(mux)
+	acp.NewFeedHandler(store).Register(mux)
 
 	var llmParser *agent.LLMParser
 	if key := os.Getenv("OPENROUTER_API_KEY"); key != "" {
