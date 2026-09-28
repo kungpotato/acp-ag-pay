@@ -10,6 +10,7 @@ import (
 	"acp-ag-pay/server/internal/catalog"
 	"acp-ag-pay/server/internal/httpx"
 	"acp-ag-pay/server/internal/payment"
+	"acp-ag-pay/server/internal/webhook"
 )
 
 func main() {
@@ -37,6 +38,14 @@ func main() {
 		log.Print("payment: STRIPE_SECRET_KEY not set, /api/agent/pay will return 503")
 	}
 	acp.NewPayHandler(sessions, orders, settler).Register(mux)
+
+	webhookHandler := webhook.NewHandler(orders, os.Getenv("STRIPE_WEBHOOK_SECRET"))
+	if webhookHandler.Configured() {
+		log.Print("webhook: Stripe signature verification enabled")
+	} else {
+		log.Print("webhook: STRIPE_WEBHOOK_SECRET not set, /api/webhooks/stripe will return 503")
+	}
+	webhookHandler.Register(mux)
 
 	var llmParser *agent.LLMParser
 	if key := os.Getenv("OPENROUTER_API_KEY"); key != "" {
