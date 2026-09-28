@@ -75,6 +75,20 @@ func (s *Store) ReserveStock(id string, qty int) error {
 	return nil
 }
 
+// ReleaseStock returns previously reserved stock, e.g. when a checkout
+// session is canceled or fails to reserve every item in the cart.
+func (s *Store) ReleaseStock(id string, qty int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	b, ok := s.books[id]
+	if !ok {
+		return fmt.Errorf("book %s not found", id)
+	}
+	b.Stock += qty
+	s.books[id] = b
+	return nil
+}
+
 func seedBooks() []Book {
 	return []Book{
 		{ID: "bk-001", Title: "สามก๊ก", Author: "หลอกว้านจง", Genre: "วรรณกรรมคลาสสิก", PriceCents: 29000, Currency: "thb", Description: "มหากาพย์การเมืองและสงครามยุคสามก๊ก", Stock: 12},

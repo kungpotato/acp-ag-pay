@@ -1,7 +1,6 @@
 package acp
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"acp-ag-pay/server/internal/catalog"
@@ -20,11 +19,5 @@ func (h *FeedHandler) Register(mux *http.ServeMux) {
 }
 
 func (h *FeedHandler) listProducts(w http.ResponseWriter, r *http.Request) {
-	feed := Feed(h.store)
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]any{
-		"products": feed,
-	})
+	writeJSON(w, http.StatusOK, map[string]any{"products": Feed(h.store)})
 }

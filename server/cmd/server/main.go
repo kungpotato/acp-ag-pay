@@ -22,6 +22,9 @@ func main() {
 	catalog.NewHandler(store).Register(mux)
 	acp.NewFeedHandler(store).Register(mux)
 
+	sessions := acp.NewSessionStore(store)
+	acp.NewSessionHandler(sessions).Register(mux)
+
 	var llmParser *agent.LLMParser
 	if key := os.Getenv("OPENROUTER_API_KEY"); key != "" {
 		llmParser = agent.NewLLMParser(key)
