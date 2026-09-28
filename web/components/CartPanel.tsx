@@ -3,16 +3,20 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { createCheckoutSession, type CheckoutSession } from "@/lib/checkout";
+import { settlePayment } from "@/lib/pay";
 
 export default function CartPanel() {
   const { items, removeItem, totalCents } = useCart();
   const [session, setSession] = useState<CheckoutSession | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [payMessage, setPayMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [paying, setPaying] = useState(false);
 
   async function handleCheckout() {
     setLoading(true);
     setError(null);
+    setPayMessage(null);
     try {
       const created = await createCheckoutSession(
         items.map((i) => ({ product_id: i.productId, quantity: i.quantity })),
@@ -22,6 +26,27 @@ export default function CartPanel() {
       setError(e instanceof Error ? e.message : "checkout ไม่สำเร็จ");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handlePay() {
+    if (!session) return;
+    setPaying(true);
+    setPayMessage(null);
+    try {
+      const result = await settlePayment(session.id);
+      if (result.ok) {
+        setSession(result.session);
+        setPayMessage("สร้าง Stripe PaymentIntent สำเร็จ พร้อมชำระเงินจริง");
+      } else if (result.status === 503) {
+        setPayMessage(
+          "ยังไม่ได้ตั้งค่า STRIPE_SECRET_KEY — ระบบตอบ 503 อย่างสุภาพแทนการ crash (ดูบทที่ 5)",
+        );
+      } else {
+        setPayMessage(`ชำระเงินไม่สำเร็จ: ${result.error}`);
+      }
+    } finally {
+      setPaying(false);
     }
   }
 
@@ -80,7 +105,26 @@ export default function CartPanel() {
           </p>
           <p>status: {session.status}</p>
           <p>total: {(session.total_cents / 100).toLocaleString("th-TH")} บาท</p>
+          {session.payment_intent_id && (
+            <p>
+              payment_intent: <code>{session.payment_intent_id}</code>
+            </p>
+          )}
         </div>
+      )}
+
+      {session && session.status === "pending" && (
+        <button
+          onClick={handlePay}
+          disabled={paying}
+          className="mt-3 w-full rounded border border-zinc-900 px-4 py-2 text-sm disabled:opacity-50 dark:border-zinc-100"
+        >
+          {paying ? "กำลัง settle กับ Stripe..." : "ชำระเงินผ่าน Stripe (settle)"}
+        </button>
+      )}
+
+      {payMessage && (
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{payMessage}</p>
       )}
     </section>
   );
