@@ -1,4 +1,5 @@
 import { fetchBooks, formatPrice } from "@/lib/api";
+import ChatPanel from "@/components/ChatPanel";
 
 export default async function Home() {
   const books = await fetchBooks().catch(() => []);
@@ -43,6 +44,8 @@ export default async function Home() {
           ))}
         </ul>
       )}
+
+      <ChatPanel />
     </main>
   );
 }
