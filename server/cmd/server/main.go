@@ -29,17 +29,22 @@ func main() {
 
 	orders := acp.NewOrderStore()
 	acp.NewOrderHandler(orders).Register(mux)
-	acp.NewDevHandler(orders).Register(mux) // workshop-only, see dev_handler.go
+
+	links := acp.NewLinkStore()
+
+	acp.NewDevHandler(orders, links).Register(mux) // workshop-only, see dev_handler.go
 
 	settler := payment.NewStripeSettler(os.Getenv("STRIPE_SECRET_KEY"))
 	if settler.Configured() {
 		log.Print("payment: Stripe settlement enabled")
 	} else {
-		log.Print("payment: STRIPE_SECRET_KEY not set, /api/agent/pay will return 503")
+		log.Print("payment: STRIPE_SECRET_KEY not set, /api/agent/pay and /api/agent/link will return 503")
 	}
 	acp.NewPayHandler(sessions, orders, settler).Register(mux)
+	acp.NewLinkHandler(links, settler).Register(mux)
+	acp.NewAutopayHandler(sessions, orders, links, settler).Register(mux)
 
-	webhookHandler := webhook.NewHandler(orders, os.Getenv("STRIPE_WEBHOOK_SECRET"))
+	webhookHandler := webhook.NewHandler(orders, links, os.Getenv("STRIPE_WEBHOOK_SECRET"))
 	if webhookHandler.Configured() {
 		log.Print("webhook: Stripe signature verification enabled")
 	} else {

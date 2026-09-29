@@ -19,11 +19,12 @@ import (
 
 type Handler struct {
 	orders        *acp.OrderStore
+	links         *acp.LinkStore
 	signingSecret string
 }
 
-func NewHandler(orders *acp.OrderStore, signingSecret string) *Handler {
-	return &Handler{orders: orders, signingSecret: signingSecret}
+func NewHandler(orders *acp.OrderStore, links *acp.LinkStore, signingSecret string) *Handler {
+	return &Handler{orders: orders, links: links, signingSecret: signingSecret}
 }
 
 func (h *Handler) Configured() bool { return h.signingSecret != "" }
@@ -61,6 +62,8 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request) {
 		h.confirmOrder(event, acp.OrderPaid)
 	case "payment_intent.payment_failed":
 		h.confirmOrder(event, acp.OrderFailed)
+	case "setup_intent.succeeded":
+		h.activateLink(event)
 	default:
 		log.Printf("webhook: ignoring unhandled event type %s", event.Type)
 	}
@@ -83,6 +86,24 @@ func (h *Handler) confirmOrder(event stripe.Event, status acp.OrderStatus) {
 
 	if _, ok := h.orders.Confirm(order.ID, status); ok {
 		log.Printf("webhook: order %s confirmed as %s", order.ID, status)
+	}
+}
+
+func (h *Handler) activateLink(event stripe.Event) {
+	var si stripe.SetupIntent
+	if err := json.Unmarshal(event.Data.Raw, &si); err != nil {
+		log.Printf("webhook: failed to parse setup_intent from event %s: %v", event.ID, err)
+		return
+	}
+	if si.PaymentMethod == nil {
+		log.Printf("webhook: setup_intent %s has no payment_method, ignoring", si.ID)
+		return
+	}
+
+	if link, ok := h.links.Activate(si.ID, si.PaymentMethod.ID); ok {
+		log.Printf("webhook: link %s activated with payment_method %s", link.ID, link.PaymentMethodID)
+	} else {
+		log.Printf("webhook: no link found for setup_intent %s", si.ID)
 	}
 }
 
