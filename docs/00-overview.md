@@ -28,6 +28,7 @@
 | 6 | [สถานะคำสั่งซื้อและหน้ายืนยัน](06-order-status.md) | ปิด loop ฝั่งผู้ใช้ ให้เห็นสถานะคำสั่งซื้อเปลี่ยนแบบ real-time |
 | 7 | [Stripe webhook: ยืนยันการชำระเงินแบบ async](07-stripe-webhook.md) | เข้าใจว่าทำไมจะเชื่อ response ตอน checkout อย่างเดียวไม่พอ ต้องรอ webhook ยืนยันจริง |
 | 8 | [สรุปรวม: เดโมแบบ end-to-end](08-summary.md) | ต่อทุกชิ้นส่วนเข้าด้วยกัน ทบทวนสิ่งที่ได้เรียนรู้ทั้งหมด |
+| 9 | [Agentic settlement จริง: ผูกบัญชีครั้งเดียว agent จ่ายเองได้ตลอด](09-agentic-settlement.md) | แก้จุดอ่อนของบทที่ 5: ถ้าผู้ซื้อต้องกดจ่ายเองทุกครั้งก็ไม่ใช่ agentic payment จริง — เรียนกลไกแบบ Shared Payment Token / Stripe Link |
 
 ## หลักการทำงานระหว่าง workshop
 
