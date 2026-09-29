@@ -4,16 +4,20 @@ import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { createCheckoutSession, type CheckoutSession } from "@/lib/checkout";
 import { settlePayment } from "@/lib/pay";
+import { autopay } from "@/lib/autopay";
+import { useLink } from "@/lib/link-context";
 import OrderStatus from "./OrderStatus";
 
 export default function CartPanel() {
   const { items, removeItem, totalCents } = useCart();
+  const { link } = useLink();
   const [session, setSession] = useState<CheckoutSession | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [payMessage, setPayMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [autopaying, setAutopaying] = useState(false);
 
   async function handleCheckout() {
     setLoading(true);
@@ -50,6 +54,30 @@ export default function CartPanel() {
       }
     } finally {
       setPaying(false);
+    }
+  }
+
+  async function handleAutopay() {
+    if (!session || !link) return;
+    setAutopaying(true);
+    setPayMessage(null);
+    try {
+      const result = await autopay(session.id, link.id);
+      if (result.ok) {
+        setSession(result.session);
+        setOrderId(result.order.id);
+        setPayMessage("agent จ่ายเงินให้อัตโนมัติแล้ว — ไม่มีการกดปุ่ม \"จ่ายเงิน\" ต่อออเดอร์เลย");
+      } else if (result.status === 503) {
+        setPayMessage(
+          "ยังไม่ได้ตั้งค่า STRIPE_SECRET_KEY — ระบบตอบ 503 อย่างสุภาพเหมือนบทที่ 5",
+        );
+      } else if (result.status === 403) {
+        setPayMessage(`agent จ่ายเองไม่ได้: ${result.error} (เกินวงเงินที่เชื่อมต่อไว้)`);
+      } else {
+        setPayMessage(`agent จ่ายเงินไม่สำเร็จ: ${result.error}`);
+      }
+    } finally {
+      setAutopaying(false);
     }
   }
 
@@ -117,13 +145,33 @@ export default function CartPanel() {
       )}
 
       {session && session.status === "pending" && (
-        <button
-          onClick={handlePay}
-          disabled={paying}
-          className="mt-3 w-full rounded border border-zinc-900 px-4 py-2 text-sm disabled:opacity-50 dark:border-zinc-100"
-        >
-          {paying ? "กำลัง settle กับ Stripe..." : "ชำระเงินผ่าน Stripe (settle)"}
-        </button>
+        <div className="mt-3 flex flex-col gap-2">
+          <button
+            onClick={handlePay}
+            disabled={paying}
+            className="w-full rounded border border-zinc-900 px-4 py-2 text-sm disabled:opacity-50 dark:border-zinc-100"
+          >
+            {paying
+              ? "กำลัง settle กับ Stripe..."
+              : "แบบเดิม: กดจ่ายเงินเอง (บทที่ 5)"}
+          </button>
+
+          {link ? (
+            <button
+              onClick={handleAutopay}
+              disabled={autopaying}
+              className="w-full rounded bg-green-700 px-4 py-2 text-sm text-white disabled:opacity-50"
+            >
+              {autopaying
+                ? "agent กำลังจ่ายเงินอัตโนมัติ..."
+                : "ให้ agent จ่ายเงินอัตโนมัติ (บทที่ 9, ไม่ต้องกดจ่ายเอง)"}
+            </button>
+          ) : (
+            <p className="text-xs text-zinc-500">
+              เชื่อมต่อวิธีชำระเงินด้านล่างก่อน เพื่อให้ agent จ่ายเงินอัตโนมัติได้โดยไม่ต้องกดปุ่มนี้อีก
+            </p>
+          )}
+        </div>
       )}
 
       {payMessage && (

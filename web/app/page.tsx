@@ -1,5 +1,6 @@
 import { fetchBooks } from "@/lib/api";
 import BookGrid from "@/components/BookGrid";
+import AgentWallet from "@/components/AgentWallet";
 import CartPanel from "@/components/CartPanel";
 import ChatPanel from "@/components/ChatPanel";
 
@@ -12,10 +13,12 @@ export default async function Home() {
         ร้านขายหนังสือ
       </h1>
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-        บทที่ 1: แคตตาล็อกหนังสือจาก Go backend · บทที่ 4: ตะกร้าและ checkout session
+        บทที่ 1: แคตตาล็อกหนังสือจาก Go backend · บทที่ 4: ตะกร้าและ checkout session ·
+        บทที่ 9: agentic settlement
       </p>
 
       <BookGrid books={books} />
+      <AgentWallet />
       <CartPanel />
       <ChatPanel />
     </main>
